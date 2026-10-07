@@ -1,0 +1,31 @@
+# LOCAL OVERLAY: the base, customised for the local kind cluster.
+# This folder is what Argo CD deploys. Changing this file in Git = changing the cluster.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: hello-app # every resource goes into this namespace
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+# Which image versions to run. Update newTag after building + loading new images.
+images:
+  - name: hello-api
+    newTag: "20261007-224155"
+  - name: hello-web
+    newTag: "20261007-224155"
+
+# How many pods of each Deployment.
+replicas:
+  - name: api
+    count: 2
+  - name: web
+    count: 1
+
+# Override/add values in the base ConfigMaps.
+configMapGenerator:
+  - name: api-config
+    behavior: merge
+    literals:
+      - APP_ENVIRONMENT=local-kind

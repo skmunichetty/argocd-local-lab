@@ -1,0 +1,28 @@
+# BASE: what the app looks like in every environment.
+# It has no namespace and placeholder image tags; overlays fill those in.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - api-deployment.yaml
+  - api-service.yaml
+  - web-deployment.yaml
+  - web-service.yaml
+
+# Added to every resource (but not to selectors, which must never change).
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: hello-app
+    includeSelectors: false
+
+# ConfigMaps are generated with a content hash in their name (e.g. api-config-7k2f9).
+# Changing a value creates a new name, which makes the Deployment roll out new pods.
+configMapGenerator:
+  - name: api-config
+    literals:
+      - GREETING=Hello from .NET on Kubernetes
+      - APP_ENVIRONMENT=base
+  - name: web-config
+    literals:
+      # "api" is the Kubernetes Service name of the .NET API (same namespace).
+      - API_UPSTREAM=http://api:8080

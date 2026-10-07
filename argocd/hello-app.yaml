@@ -1,0 +1,34 @@
+# The Argo CD "Application": tells Argo CD WHAT to deploy (a folder in a Git repo)
+# and WHERE (this cluster, namespace hello-app).
+# Apply once with:  kubectl apply -f argocd/hello-app.yaml
+# After that, you change the app by pushing to Git, not by running kubectl.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-app
+  namespace: argocd # Applications live in Argo CD's own namespace
+  # When this Application is deleted, also delete everything it deployed.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    # Argo CD runs inside the cluster and clones this URL itself.
+    # It cannot see your laptop's folders. Public repo, so no credentials are needed.
+    repoURL: https://github.com/skmunichetty/argocd-local-lab.git
+    targetRevision: main
+    path: deploy/overlays/local # Argo CD detects kustomization.yaml and runs Kustomize
+
+  destination:
+    server: https://kubernetes.default.svc # "the cluster Argo CD itself runs in"
+    namespace: hello-app
+
+  syncPolicy:
+    automated:
+      # prune: delete cluster resources whose manifests were removed from Git.
+      prune: true
+      # selfHeal: undo manual changes (e.g. kubectl scale/edit) so the cluster matches Git again.
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # safety net; the overlay also defines the namespace

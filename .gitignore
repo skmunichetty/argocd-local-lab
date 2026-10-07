@@ -1,0 +1,18 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Node / Vite
+node_modules/
+dist/
+
+# Project-local tools (kind.exe)
+.tools/
+
+# Never commit credentials
+*.pem
+*.key
+.env
+.env.*

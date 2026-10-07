@@ -1,0 +1,15 @@
+# Stable in-cluster address "api:8080" that load-balances across the API pods.
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  labels:
+    app.kubernetes.io/name: api
+spec:
+  type: ClusterIP # reachable only inside the cluster (we use port-forward from the laptop)
+  selector:
+    app.kubernetes.io/name: api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
