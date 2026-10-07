@@ -12,9 +12,9 @@ resources:
 # Which image versions to run. Update newTag after building + loading new images.
 images:
   - name: hello-api
-    newTag: "20261007-224155"
+    newTag: "20261007-230959"
   - name: hello-web
-    newTag: "20261007-224155"
+    newTag: "20261007-230959"
 
 # How many pods of each Deployment.
 replicas:

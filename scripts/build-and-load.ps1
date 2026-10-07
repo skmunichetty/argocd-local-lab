@@ -19,6 +19,8 @@ $kind = if (Test-Path "$root\.tools\kind.exe") { "$root\.tools\kind.exe" } else 
 
 function Invoke-Step([string]$description, [scriptblock]$command) {
     Write-Host "==> $description" -ForegroundColor Cyan
+    # docker/kind print progress on stderr; judge success by exit code, not by stderr output.
+    $ErrorActionPreference = 'Continue'
     & $command
     if ($LASTEXITCODE -ne 0) { throw "Failed: $description" }
 }
